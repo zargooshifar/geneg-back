@@ -41,7 +41,10 @@ func main() {
 		BodyLimit: 50 * 1024 * 1024,
 	})
 
-	app.Use(cors.New())
+	app.Use(cors.New(cors.Config{
+		AllowOrigins: "*",
+		AllowMethods: "GET,POST,PUT, DELETE",
+	}))
 
 	app.Use(recover.New())
 	app.Use(logger.New())
