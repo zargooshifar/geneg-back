@@ -62,7 +62,7 @@ func CheckUserName(c *fiber.Ctx) error {
 
 		remoteIP := getIPAdress(c)
 		log.Println(remoteIP)
-		if remoteIP != "81.16.121.206" || remoteIP != "127.0.0.1" {
+		if remoteIP != "81.16.121.206" || remoteIP != "192.168.31.1" {
 			return c.Status(fiber.StatusForbidden).JSON(fiber.Map{
 				"message": errors.CANT_REGISTER_OUTSIDE_CORP,
 			})
