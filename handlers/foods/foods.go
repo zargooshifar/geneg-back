@@ -22,15 +22,15 @@ type reserve struct {
 }
 
 type reserveFood struct {
-	Food models.Food `json:"food"`
-	Count int `json:"count"`
+	Food  models.Food `json:"food"`
+	Count int         `json:"count"`
 }
 
 func GetReserves(c *fiber.Ctx) error {
 	user := c.Locals("user").(*models.User)
 	foods := []models.Food{}
 
-	database.DB.Model(&models.Food{}).Where("expire >= ?" , time.Now()).Find(&foods);
+	database.DB.Model(&models.Food{}).Where("expire >= ?, type = ?", time.Now(), models.BUFFET).Find(&foods)
 
 	result := []reserveFood{}
 
@@ -39,10 +39,9 @@ func GetReserves(c *fiber.Ctx) error {
 		database.DB.Model(&models.Reserve{}).Where(&models.Reserve{
 			UserID: user.ID,
 			FoodID: food.ID,
-
 		}).Find(&reserve)
 		result = append(result, reserveFood{
-			Food: food,
+			Food:  food,
 			Count: reserve.Count,
 		})
 	}
@@ -60,7 +59,7 @@ func ReserveFood(c *fiber.Ctx) error {
 		FoodID: uuid.MustParse(reserve_params.FoodID),
 	}
 	food := models.Food{}
-	if(food.Expire.After(time.Now())){
+	if food.Expire.After(time.Now()) {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
 			"message": errors.EXPIRE_FOOD,
 			"err":     "err",
@@ -69,20 +68,20 @@ func ReserveFood(c *fiber.Ctx) error {
 
 	reserve_count := database.DB.Table("reserves").Where(&new_reserve).Find(&new_reserve).RowsAffected
 
-	if(reserve_count == 0){
+	if reserve_count == 0 {
 
-			if err := database.DB.Create(&new_reserve).Error; err != nil {
-				return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-					"message": errors.DB_ERROR_SAVING,
-					"err":     err,
-				})
-			}
+		if err := database.DB.Create(&new_reserve).Error; err != nil {
+			return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+				"message": errors.DB_ERROR_SAVING,
+				"err":     err,
+			})
+		}
 	}
 
-	if(reserve_params.Type == ADD){
+	if reserve_params.Type == ADD {
 		new_reserve.Count += 1
 	} else if reserve_params.Type == REMOVE {
-		if(new_reserve.Count == 0) {
+		if new_reserve.Count == 0 {
 			return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
 				"message": errors.NO_RESERVE,
 				"err":     "err",
