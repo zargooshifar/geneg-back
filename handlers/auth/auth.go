@@ -58,7 +58,7 @@ func CheckUserName(c *fiber.Ctx) error {
 		ip := c.IP()
 		if ip != "81.16.121.206" || ip != "127.0.0.1" {
 			return c.Status(fiber.StatusForbidden).JSON(fiber.Map{
-				"err": errors.CANT_REGISTER_OUTSIDE_CORP,
+				"message": errors.CANT_REGISTER_OUTSIDE_CORP,
 			})
 		}
 
