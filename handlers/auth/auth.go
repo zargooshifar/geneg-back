@@ -1,7 +1,6 @@
 package auth
 
 import (
-	"github.com/Ferluci/fast-realip"
 	"github.com/gofiber/fiber/v2"
 	"github.com/google/uuid"
 	"log"
@@ -57,9 +56,10 @@ func CheckUserName(c *fiber.Ctx) error {
 	}
 	exists := (database.DB.Where(&models.User{Username: username.Username}).First(&models.User{}).RowsAffected > 0)
 	if !exists {
-		clientIP := realip.FromRequest(c.Context())
-		log.Println(clientIP)
-		if clientIP != "81.16.121.206" || clientIP != "127.0.0.1" {
+
+		remoteIP := c.Context().RemoteAddr().String()
+		log.Println(remoteIP)
+		if remoteIP != "81.16.121.206" || remoteIP != "127.0.0.1" {
 			return c.Status(fiber.StatusForbidden).JSON(fiber.Map{
 				"message": errors.CANT_REGISTER_OUTSIDE_CORP,
 			})
