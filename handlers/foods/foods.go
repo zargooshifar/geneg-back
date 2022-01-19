@@ -30,7 +30,7 @@ func GetReserves(c *fiber.Ctx) error {
 	user := c.Locals("user").(*models.User)
 	foods := []models.Food{}
 
-	database.DB.Model(&models.Food{}).Where("expire >= ? AND type = ?", time.Now(), models.LAUNCH).Find(&foods)
+	database.DB.Model(&models.Food{}).Where("expire >= ? AND type = 'lunch'", time.Now()).Find(&foods)
 
 	result := []reserveFood{}
 
