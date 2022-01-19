@@ -21,17 +21,16 @@ func (list ROLES) Has(role string) bool {
 	return false
 }
 
-
 type (
 	User struct {
 		Base
-		Username     string     `gorm:"index:,unique" json:"username"`
-		Password     string     `json:"-"`
-		FirstName    string     `json:"first_name"`
-		LastName     string     `json:"last_name"`
-		Role         string     `json:"role"`
-		Payments	[]Payment	`json:"payments"`
-		Balance		int			`json:"balance"`
+		Username  string    `gorm:"index:,unique" json:"username"`
+		Password  string    `json:"-"`
+		FirstName string    `json:"first_name"`
+		LastName  string    `json:"last_name"`
+		Role      string    `json:"role"`
+		Payments  []Payment `json:"payments" access:"admin,operator"`
+		Balance   int       `json:"balance" access:"admin,operator"`
 	}
 
 	UserUpdate struct {

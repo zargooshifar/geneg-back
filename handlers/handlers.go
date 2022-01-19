@@ -30,7 +30,7 @@ func FilterQuery(c *fiber.Ctx) string {
 
 				value, _ := url.QueryUnescape(part[k+1:])
 				if part[:k] == "expire" {
-					query += part[:k] + " >= '" + value +"'"
+					query += part[:k] + " >= '" + value + "'"
 				} else {
 					query += part[:k] + " LIKE '%" + value + "%'"
 				}
@@ -45,14 +45,35 @@ func FilterQuery(c *fiber.Ctx) string {
 
 func GetItems(item interface{}) func(c *fiber.Ctx) error {
 	return func(c *fiber.Ctx) error {
+		user := c.Locals("user").(*models.User)
+
 		filter := FilterQuery(c)
-		items := reflect.New(reflect.SliceOf(reflect.TypeOf(item))).Interface()
+
+		accessed_item := make([]reflect.StructField, 0)
+
+		fields := reflect.VisibleFields(reflect.TypeOf(item))
+		for _, field := range fields {
+			_roles, roled := field.Tag.Lookup("access")
+			if roled {
+				roles := models.ROLES{}
+				roles = strings.Split(_roles, ",")
+				if roles.Has(user.Role) {
+					accessed_item = append(accessed_item, field)
+				}
+			} else {
+				accessed_item = append(accessed_item, field)
+			}
+		}
+
+		items := reflect.New(reflect.SliceOf(reflect.StructOf(accessed_item))).Interface()
+
 		//ordering and paination parameters
 		limit, _ := strconv.Atoi(c.Query("limit"))
 		page, _ := strconv.Atoi(c.Query("page"))
 		order := c.Query("order")
 		offset := (page - 1) * limit
 		count := int64(0)
+
 		database.DB.Model(item).Offset(offset).Limit(limit).
 			Order(order).
 			Where(filter).

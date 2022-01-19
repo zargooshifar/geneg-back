@@ -62,11 +62,11 @@ func CheckUserName(c *fiber.Ctx) error {
 
 		remoteIP := getIPAdress(c)
 		log.Println(remoteIP)
-		if remoteIP != "81.16.121.206" && remoteIP != "192.168.31.1" {
-			return c.Status(fiber.StatusForbidden).JSON(fiber.Map{
-				"message": errors.CANT_REGISTER_OUTSIDE_CORP,
-			})
-		}
+		//if remoteIP != "81.16.121.206" && remoteIP != "192.168.31.1" {
+		//	return c.Status(fiber.StatusForbidden).JSON(fiber.Map{
+		//		"message": errors.CANT_REGISTER_OUTSIDE_CORP,
+		//	})
+		//}
 
 		verification_id, err := sms.SendPin(username.Username)
 		if err != nil {
