@@ -57,7 +57,7 @@ func CheckUserName(c *fiber.Ctx) error {
 	exists := (database.DB.Where(&models.User{Username: username.Username}).First(&models.User{}).RowsAffected > 0)
 	if !exists {
 
-		remoteIP := c.Context().RemoteAddr().String()
+		remoteIP := c.Context().RemoteIP().String()
 		log.Println(remoteIP)
 		if remoteIP != "81.16.121.206" || remoteIP != "127.0.0.1" {
 			return c.Status(fiber.StatusForbidden).JSON(fiber.Map{
