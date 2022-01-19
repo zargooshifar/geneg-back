@@ -3,6 +3,7 @@ package auth
 import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/google/uuid"
+	"log"
 	"msgv2-back/database"
 	"msgv2-back/errors"
 	"msgv2-back/handlers/auth/utils"
@@ -56,6 +57,7 @@ func CheckUserName(c *fiber.Ctx) error {
 	exists := (database.DB.Where(&models.User{Username: username.Username}).First(&models.User{}).RowsAffected > 0)
 	if !exists {
 		ip := c.IP()
+		log.Println(ip)
 		if ip != "81.16.121.206" || ip != "127.0.0.1" {
 			return c.Status(fiber.StatusForbidden).JSON(fiber.Map{
 				"message": errors.CANT_REGISTER_OUTSIDE_CORP,
