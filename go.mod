@@ -15,6 +15,7 @@ require (
 )
 
 require (
+	github.com/Ferluci/fast-realip v1.0.0 // indirect
 	github.com/andybalholm/brotli v1.0.2 // indirect
 	github.com/aymerick/douceur v0.2.0 // indirect
 	github.com/chris-ramon/douceur v0.2.0 // indirect

@@ -1,6 +1,8 @@
 package auth
 
 import (
+	"fmt"
+	"github.com/Ferluci/fast-realip"
 	"github.com/gofiber/fiber/v2"
 	"github.com/google/uuid"
 	"log"
@@ -9,6 +11,9 @@ import (
 	"msgv2-back/handlers/auth/utils"
 	"msgv2-back/handlers/sms"
 	"msgv2-back/models"
+	"net"
+	"net/http"
+	"strings"
 	"time"
 )
 
@@ -56,12 +61,9 @@ func CheckUserName(c *fiber.Ctx) error {
 	}
 	exists := (database.DB.Where(&models.User{Username: username.Username}).First(&models.User{}).RowsAffected > 0)
 	if !exists {
-		ip := c.IP()
-		log.Println(ip)
-		ips := c.IPs()
-		log.Println(len(ips))
-		log.Println(ips)
-		if ip != "81.16.121.206" || ip != "127.0.0.1" {
+		clientIP := realip.FromRequest(c.Context())
+		log.Println(clientIP)
+		if clientIP != "81.16.121.206" || clientIP != "127.0.0.1" {
 			return c.Status(fiber.StatusForbidden).JSON(fiber.Map{
 				"message": errors.CANT_REGISTER_OUTSIDE_CORP,
 			})
