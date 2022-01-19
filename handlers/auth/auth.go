@@ -1,7 +1,6 @@
 package auth
 
 import (
-	"fmt"
 	"github.com/Ferluci/fast-realip"
 	"github.com/gofiber/fiber/v2"
 	"github.com/google/uuid"
@@ -11,9 +10,6 @@ import (
 	"msgv2-back/handlers/auth/utils"
 	"msgv2-back/handlers/sms"
 	"msgv2-back/models"
-	"net"
-	"net/http"
-	"strings"
 	"time"
 )
 
