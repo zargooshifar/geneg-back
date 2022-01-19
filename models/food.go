@@ -5,6 +5,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/mostafah/go-jalali/jalali"
 	"gorm.io/gorm"
+	"strconv"
 	"time"
 )
 
@@ -22,7 +23,6 @@ func (f *Food) AfterFind(tx *gorm.DB) (err error) {
 	return
 }
 
-
 func (r *Reserve) BeforeUpdate(tx *gorm.DB) (err error) {
 	prv_reserve := Reserve{}
 	tx.Where("id = ?", r.ID).Find(&prv_reserve)
@@ -30,15 +30,15 @@ func (r *Reserve) BeforeUpdate(tx *gorm.DB) (err error) {
 	food := Food{}
 	tx.Where("id = ?", r.FoodID).Find(&food)
 	y, m, d := jalali.Gtoj(food.Expire)
-	jalali := fmt.Sprintf("%d-%d-%d", d,m,y)
+	jalali := fmt.Sprintf("%d-%d-%d", d, m, y)
 	sign := r.Count - prv_reserve.Count
-	if(sign == 0){
+	if sign == 0 {
 		return
 	}
 	payment := Payment{
 		Amount:      (sign) * food.Price,
 		UserID:      r.UserID,
-		Description: food.Name + " (" + jalali + ")",
+		Description: food.Name + " (" + jalali + ") - (" + strconv.Itoa(sign) + "عدد) ",
 	}
 	err = tx.Table("payments").Create(&payment).Error
 

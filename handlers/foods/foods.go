@@ -48,6 +48,57 @@ func GetReserves(c *fiber.Ctx) error {
 	return c.Status(fiber.StatusOK).JSON(result)
 }
 
+func GetBuffetItems(c *fiber.Ctx) error {
+	foods := []models.Food{}
+	database.DB.Model(&models.Food{}).Where("expire >= ? AND type = ?", time.Now(), models.BUFFET).Find(&foods)
+	return c.Status(fiber.StatusOK).JSON(foods)
+}
+
+type card_item struct {
+	Count int `json:"count"`
+}
+
+type card struct {
+	UserID string               `json:"user_id"`
+	Card   map[string]card_item `json:"card"`
+}
+
+func AddCart(c *fiber.Ctx) error {
+	card := card{}
+	c.BodyParser(&card)
+
+	for key := range card.Card {
+
+		new_reserve := models.Reserve{
+			UserID: uuid.MustParse(card.UserID),
+			FoodID: uuid.MustParse(key),
+		}
+
+		reserve_count := database.DB.Table("reserves").Where(&new_reserve).Find(&new_reserve).RowsAffected
+
+		if reserve_count == 0 {
+
+			if err := database.DB.Create(&new_reserve).Error; err != nil {
+				return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+					"message": errors.DB_ERROR_SAVING,
+					"err":     err,
+				})
+			}
+		}
+
+		new_reserve.Count += card.Card[key].Count
+
+		if err := database.DB.Table("reserves").Select("*").Updates(&new_reserve).Error; err != nil {
+			return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+				"message": errors.DB_ERROR_SAVING,
+				"err":     err,
+			})
+		}
+
+	}
+	return c.Status(fiber.StatusOK).JSON(card)
+}
+
 func ReserveFood(c *fiber.Ctx) error {
 	reserve_params := new(reserve)
 
