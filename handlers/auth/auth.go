@@ -253,10 +253,10 @@ var privateRanges = []ipRange{
 		start: net.ParseIP("192.0.0.0"),
 		end:   net.ParseIP("192.0.0.255"),
 	},
-	//ipRange{
-	//	start: net.ParseIP("192.168.0.0"),
-	//	end:   net.ParseIP("192.168.255.255"),
-	//},
+	ipRange{
+		start: net.ParseIP("192.168.0.0"),
+		end:   net.ParseIP("192.168.255.255"),
+	},
 	ipRange{
 		start: net.ParseIP("198.18.0.0"),
 		end:   net.ParseIP("198.19.255.255"),
