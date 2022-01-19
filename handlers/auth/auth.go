@@ -45,6 +45,7 @@ func Login(c *fiber.Ctx) error {
 }
 
 func CheckUserName(c *fiber.Ctx) error {
+
 	username := new(models.LoginUserName)
 
 	if err := c.BodyParser(username); err != nil {
@@ -54,6 +55,13 @@ func CheckUserName(c *fiber.Ctx) error {
 	}
 	exists := (database.DB.Where(&models.User{Username: username.Username}).First(&models.User{}).RowsAffected > 0)
 	if !exists {
+		ip := c.IP()
+		if ip != "81.16.121.206" || ip != "127.0.0.1" {
+			return c.Status(fiber.StatusForbidden).JSON(fiber.Map{
+				"err": errors.CANT_REGISTER_OUTSIDE_CORP,
+			})
+		}
+
 		verification_id, err := sms.SendPin(username.Username)
 		if err != nil {
 			return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
