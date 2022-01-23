@@ -150,7 +150,7 @@ func ResetPassword(c *fiber.Ctx) error {
 	}
 	user.Password = string(hashedPassword)
 
-	if err := database.DB.Create(&user).Error; err != nil {
+	if err := database.DB.Where("id = ?", user.ID).Update("password", string(hashedPassword)).Error; err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 			"message": errors.DB_ERROR_SAVING,
 		})
