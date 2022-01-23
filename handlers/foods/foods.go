@@ -33,7 +33,7 @@ func GetReserves(c *fiber.Ctx) error {
 
 	now := time.Now()
 	fmt.Println(now)
-	reserve_limit := time.Date(now.Year(), now.Month(), now.Day(), 12, 0, 0, 0, now.Location())
+	reserve_limit := time.Date(now.Year(), now.Month(), now.Day(), 0, 0, 0, 0, now.Location())
 	fmt.Println(reserve_limit)
 	database.DB.Model(&models.Food{}).Where("expire >= ? AND type <> ?", reserve_limit, models.BUFFET).Find(&foods)
 
