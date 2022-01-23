@@ -54,12 +54,40 @@ func GetBuffetItems(c *fiber.Ctx) error {
 	return c.Status(fiber.StatusOK).JSON(foods)
 }
 
+type reserve_result struct {
+	UserName string `json:"user_name"`
+	Count    int    `json:"count"`
+	Food     string `json:"food"`
+}
+
 func GetTodayReserves(c *fiber.Ctx) error {
 	foods := []models.Food{}
 	start := time.Now().Format("2006-01-02 00:00:00")
 	end := time.Now().Add(time.Hour * 24).Format("2006-01-02 00:00:00")
 	database.DB.Model(&models.Food{}).Where("expire >= ? AND expire < ? AND type = ?", start, end, models.LAUNCH).Find(&foods)
-	return c.Status(fiber.StatusOK).JSON(foods)
+
+	result := []reserve_result{}
+
+	for _, food := range foods {
+
+		reserves := []models.Reserve{}
+		database.DB.Model(&models.Reserve{}).Where("food_id = ?", food.ID).Find(&reserves)
+
+		for _, r := range reserves {
+			user := models.User{}
+			database.DB.Where("id = ?", r.UserID).Find(&user)
+			new_result := reserve_result{
+				Food:     food.Name,
+				UserName: user.FirstName + " " + user.LastName,
+				Count:    r.Count,
+			}
+
+			result = append(result, new_result)
+		}
+
+	}
+
+	return c.Status(fiber.StatusOK).JSON(result)
 }
 
 type card_item struct {
