@@ -133,9 +133,9 @@ func ResetPassword(c *fiber.Ctx) error {
 		})
 	}
 
-	if count := database.DB.Where(&models.User{Username: verification.Number}).First(new(models.User)).RowsAffected; count > 0 {
+	if count := database.DB.Where(&models.User{Username: verification.Number}).First(new(models.User)).RowsAffected; count == 0 {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-			"message": errors.USER_EXIST,
+			"message": errors.USER_NOT_EXIST,
 		})
 	}
 
