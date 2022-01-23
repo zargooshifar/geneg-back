@@ -85,6 +85,90 @@ func CheckUserName(c *fiber.Ctx) error {
 	})
 }
 
+func ForgetPin(c *fiber.Ctx) error {
+
+	username := new(models.LoginUserName)
+
+	if err := c.BodyParser(username); err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"message": errors.WRONG_INPUT,
+		})
+	}
+
+	exists := (database.DB.Where(&models.User{Username: username.Username}).First(&models.User{}).RowsAffected > 0)
+
+	verification_id, err := sms.SendPin(username.Username)
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"message": err,
+		})
+	}
+
+	return c.Status(fiber.StatusOK).JSON(fiber.Map{
+		"verification_id": verification_id,
+		"exists":          exists,
+	})
+
+}
+
+func ResetPassword(c *fiber.Ctx) error {
+
+	reg := new(models.Registration)
+	if err := c.BodyParser(reg); err != nil {
+		return c.Status(fiber.StatusBadRequest).Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"message": errors.WRONG_INPUT,
+		})
+	}
+
+	verification := new(models.VerificationSMS)
+	if count := database.DB.Where(&models.VerificationSMS{ID: uuid.MustParse(reg.Verification)}).First(&verification).RowsAffected; count == 0 {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"message": errors.VERIFICATION_NOT_EXIST,
+		})
+	}
+
+	if !verification.Confirm {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"message": errors.VERIFICATION_NOT_CONFIRMED,
+		})
+	}
+
+	if count := database.DB.Where(&models.User{Username: verification.Number}).First(new(models.User)).RowsAffected; count > 0 {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"message": errors.USER_EXIST,
+		})
+	}
+
+	user := new(models.User)
+
+	// Hashing the password with a random salt
+	password := []byte(reg.Password)
+	hashedPassword, err := utils.GenerateHashPassword(password)
+
+	if err != nil {
+		panic(err)
+	}
+	user.Password = string(hashedPassword)
+
+	if err := database.DB.Create(&user).Error; err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"message": errors.DB_ERROR_SAVING,
+		})
+	}
+
+	//delete verification...
+	database.DB.Delete(verification)
+
+	// setting up the authorization cookies
+	accessToken, refreshToken := utils.GenerateTokens(user)
+
+	return c.Status(fiber.StatusOK).JSON(fiber.Map{
+		"access":  accessToken,
+		"refresh": refreshToken,
+	})
+
+}
+
 func VerifyPin(c *fiber.Ctx) error {
 	max_attempts := 5
 	pin := new(models.Pin)

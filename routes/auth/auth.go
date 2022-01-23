@@ -10,6 +10,8 @@ func Routes(app *fiber.App) {
 	app.Post("api/auth/token", auth.Login)
 	app.Post("api/auth/refresh", auth.Refresh)
 	app.Post("api/auth/verifypin", auth.VerifyPin)
+	app.Post("api/auth/forgetpin", auth.ForgetPin)
+	app.Post("api/auth/resetpassword", auth.ResetPassword)
 	app.Post("api/auth/completeregister", auth.CompleteRegister)
 	app.Get("api/auth/logout", auth.Logout)
 }
