@@ -160,7 +160,7 @@ func ResetPassword(c *fiber.Ctx) error {
 	database.DB.Delete(verification)
 
 	// setting up the authorization cookies
-	accessToken, refreshToken := utils.GenerateTokens(user)
+	accessToken, refreshToken := utils.GenerateTokens(&user)
 
 	return c.Status(fiber.StatusOK).JSON(fiber.Map{
 		"access":  accessToken,
