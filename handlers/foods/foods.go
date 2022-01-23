@@ -87,7 +87,10 @@ func GetTodayReserves(c *fiber.Ctx) error {
 
 	}
 
-	return c.Status(fiber.StatusOK).JSON(result)
+	return c.Status(fiber.StatusOK).JSON(fiber.Map{
+		"results": result,
+		"count":   0,
+	})
 }
 
 type card_item struct {
