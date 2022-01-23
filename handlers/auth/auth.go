@@ -133,13 +133,13 @@ func ResetPassword(c *fiber.Ctx) error {
 		})
 	}
 
-	if count := database.DB.Where(&models.User{Username: verification.Number}).First(new(models.User)).RowsAffected; count == 0 {
+	user := models.User{}
+
+	if count := database.DB.Where(&models.User{Username: verification.Number}).First(&user).RowsAffected; count == 0 {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
 			"message": errors.USER_NOT_EXIST,
 		})
 	}
-
-	user := new(models.User)
 
 	// Hashing the password with a random salt
 	password := []byte(reg.Password)
@@ -150,7 +150,7 @@ func ResetPassword(c *fiber.Ctx) error {
 	}
 	user.Password = string(hashedPassword)
 
-	if err := database.DB.Where("id = ?", user.ID).Update("password", string(hashedPassword)).Error; err != nil {
+	if err := database.DB.Where("id = ?", user.ID).Updates(&user).Error; err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 			"message": errors.DB_ERROR_SAVING,
 		})
