@@ -3,6 +3,7 @@ package ws
 import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/websocket/v2"
+	"log"
 )
 
 func Config(app *fiber.App) {
@@ -29,9 +30,9 @@ func Config(app *fiber.App) {
 		)
 		for {
 			if mt, msg, err = c.ReadMessage(); err != nil {
-				//log.Println("read:", err)
-				//
-				//break
+				log.Println("read:", err)
+
+				break
 			}
 
 			for i, client := range clients {
@@ -41,8 +42,8 @@ func Config(app *fiber.App) {
 					return
 				} else {
 					if err = client.WriteMessage(mt, msg); err != nil {
-						//log.Println("write:", err)
-						//break
+						log.Println("write:", err)
+						break
 					}
 				}
 
