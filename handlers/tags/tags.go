@@ -57,7 +57,7 @@ func TagList(c *fiber.Ctx) error {
 	database.DB.Model(&models.Tag{}).Offset(offset).Limit(limit).
 		Order(order).
 		Where("user_id = ?", user.ID).
-		Find(items).Offset(-1).Count(&count)
+		Find(&items).Offset(-1).Count(&count)
 	return c.Status(fiber.StatusOK).JSON(fiber.Map{
 		"count":   count,
 		"results": items,
@@ -70,7 +70,7 @@ func TagCreate(c *fiber.Ctx) error {
 	tag := models.Tag{}
 	c.BodyParser(&tag)
 	tag.UserID = user.ID
-	if err := database.DB.Model(&models.Tag{}).Create(tag).Error; err != nil {
+	if err := database.DB.Model(&models.Tag{}).Create(&tag).Error; err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 			"message": errors.DB_ERROR_SAVING,
 		})
@@ -83,7 +83,7 @@ func TagEdit(c *fiber.Ctx) error {
 	c.BodyParser(&temp)
 	base := new(models.Base)
 	c.BodyParser(base)
-	if err := database.DB.Model(&models.Tag{}).Where("id = ?", base.ID.String()).Select("*").Updates(temp).Error; err != nil {
+	if err := database.DB.Model(&models.Tag{}).Where("id = ?", base.ID.String()).Select("*").Updates(&temp).Error; err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 			"message": errors.DB_ERROR_SAVING,
 			"err":     err,
@@ -95,7 +95,7 @@ func TagEdit(c *fiber.Ctx) error {
 func TagDelete(c *fiber.Ctx) error {
 	id := c.Query("id")
 	tag := models.Tag{}
-	err := database.DB.Delete(tag, uuid.MustParse(id)).Error
+	err := database.DB.Delete(&tag, uuid.MustParse(id)).Error
 	if err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
 			"message": err,
