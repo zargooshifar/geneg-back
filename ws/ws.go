@@ -3,7 +3,6 @@ package ws
 import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/websocket/v2"
-	"log"
 )
 
 func Config(app *fiber.App) {
@@ -22,15 +21,7 @@ func Config(app *fiber.App) {
 
 	app.Get("/ws/buffet", websocket.New(func(c *websocket.Conn) {
 		clients = append(clients, c)
-		c.SetCloseHandler(func(code int, text string) error {
 
-			for i, item := range clients {
-				if item == c {
-					clients = append(clients[:i], clients[i+1:]...)
-				}
-			}
-			return nil
-		})
 		var (
 			mt  int
 			msg []byte
@@ -38,18 +29,23 @@ func Config(app *fiber.App) {
 		)
 		for {
 			if mt, msg, err = c.ReadMessage(); err != nil {
-				log.Println("read:", err)
-
-				break
+				//log.Println("read:", err)
+				//
+				//break
 			}
 
-			log.Printf("recv: %s", msg)
-			for _, client := range clients {
+			for i, client := range clients {
 
-				if err = client.WriteMessage(mt, msg); err != nil {
-					log.Println("write:", err)
-					break
+				if client == nil {
+					clients = append(clients[:i], clients[i+1:]...)
+					return
+				} else {
+					if err = client.WriteMessage(mt, msg); err != nil {
+						//log.Println("write:", err)
+						//break
+					}
 				}
+
 			}
 
 		}
