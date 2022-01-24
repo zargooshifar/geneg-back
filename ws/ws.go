@@ -22,7 +22,6 @@ func Config(app *fiber.App) {
 
 	app.Get("/ws/buffet", websocket.New(func(c *websocket.Conn) {
 		clients = append(clients, c)
-
 		var (
 			mt  int
 			msg []byte
@@ -32,21 +31,21 @@ func Config(app *fiber.App) {
 			if mt, msg, err = c.ReadMessage(); err != nil {
 				log.Println("read:", err)
 
-				break
-			}
-
-			for i, client := range clients {
-
-				if client == nil {
-					clients = append(clients[:i], clients[i+1:]...)
-					return
-				} else {
-					if err = client.WriteMessage(mt, msg); err != nil {
-						log.Println("write:", err)
-						break
+				for i, item := range clients {
+					if item == c {
+						clients = append(clients[:i], clients[i+1:]...)
 					}
 				}
 
+				break
+			}
+
+			log.Printf("recv: %s", msg)
+			for _, client := range clients {
+				if err = client.WriteMessage(mt, msg); err != nil {
+					log.Println("write:", err)
+					break
+				}
 			}
 
 		}
