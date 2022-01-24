@@ -8,6 +8,8 @@ import (
 
 func Config(app *fiber.App) {
 
+	clients := []*websocket.Conn{}
+
 	app.Use("/ws", func(c *fiber.Ctx) error {
 		// IsWebSocketUpgrade returns true if the client
 		// requested upgrade to the WebSocket protocol.
@@ -19,6 +21,7 @@ func Config(app *fiber.App) {
 	})
 
 	app.Get("/ws/buffet", websocket.New(func(c *websocket.Conn) {
+		clients = append(clients, c)
 		var (
 			mt  int
 			msg []byte
@@ -29,11 +32,15 @@ func Config(app *fiber.App) {
 				log.Println("read:", err)
 				break
 			}
+
 			log.Printf("recv: %s", msg)
-			if err = c.WriteMessage(mt, msg); err != nil {
-				log.Println("write:", err)
-				break
+			for _, client := range clients {
+				if err = client.WriteMessage(mt, msg); err != nil {
+					log.Println("write:", err)
+					break
+				}
 			}
+
 		}
 
 	}))
