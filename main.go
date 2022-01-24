@@ -13,6 +13,7 @@ import (
 	"msgv2-back/routes/images"
 	"msgv2-back/routes/payments"
 	"msgv2-back/routes/reserve"
+	"msgv2-back/routes/tags"
 	"msgv2-back/routes/users"
 	"msgv2-back/ws"
 
@@ -56,6 +57,7 @@ func main() {
 	payments.Routes(app)
 	reserve.Routes(app)
 	face_detection.Routes(app)
+	tags.Routes(app)
 
 	ws.Config(app)
 

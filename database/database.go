@@ -7,7 +7,6 @@ import (
 	"msgv2-back/config"
 	"msgv2-back/models"
 	"strconv"
-
 )
 
 var DB *gorm.DB
@@ -31,8 +30,8 @@ func ConnectDB() {
 	DB.AutoMigrate(&models.FaceImage{})
 	DB.AutoMigrate(&models.FaceID{})
 	DB.AutoMigrate(&models.Claims{})
+	DB.AutoMigrate(&models.Tag{})
 	DB.AutoMigrate(&models.VerificationSMS{})
-
 
 	fmt.Println("Database Migrated!")
 }
