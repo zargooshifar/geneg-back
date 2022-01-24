@@ -14,6 +14,7 @@ import (
 	"msgv2-back/routes/payments"
 	"msgv2-back/routes/reserve"
 	"msgv2-back/routes/users"
+	"msgv2-back/ws"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/logger"
@@ -55,6 +56,8 @@ func main() {
 	payments.Routes(app)
 	reserve.Routes(app)
 	face_detection.Routes(app)
+
+	ws.Config(app)
 
 	app.Use(handlers.NotFound)
 
