@@ -3,7 +3,6 @@ package tags
 import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/google/uuid"
-	"log"
 	"msgv2-back/database"
 	"msgv2-back/errors"
 	"msgv2-back/models"
@@ -66,15 +65,17 @@ func TagList(c *fiber.Ctx) error {
 }
 
 func TagCreate(c *fiber.Ctx) error {
-	temp := models.Tag{}
-	c.BodyParser(&temp)
-	log.Println(temp)
-	if err := database.DB.Model(&models.Tag{}).Create(temp).Error; err != nil {
+	user := c.Locals("user").(*models.User)
+
+	tag := models.Tag{}
+	c.BodyParser(&tag)
+	tag.UserID = user.ID
+	if err := database.DB.Model(&models.Tag{}).Create(tag).Error; err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 			"message": errors.DB_ERROR_SAVING,
 		})
 	}
-	return c.Status(200).JSON(temp)
+	return c.Status(200).JSON(tag)
 }
 
 func TagEdit(c *fiber.Ctx) error {
