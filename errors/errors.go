@@ -25,5 +25,6 @@ const (
 	NO_RESERVE                 = "رزروی یافت نشد!"
 	NOT_SINGLE_FACE            = "NOT_SINGLE_FACE"
 	NOT_TRAINED                = "NOT_TRAINED"
+	DEPT						= "لطفا برای ادامه ابتدا بدهی خود را بپردازید."
 	CANT_REGISTER_OUTSIDE_CORP = "ثبت نام نکرده اید. ثبت نام در سایت فقط از طریق اینترنت مجموعه امکان پذیر است."
 )

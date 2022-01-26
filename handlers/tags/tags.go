@@ -13,8 +13,9 @@ type tagCheck struct {
 	TagID string `json:"tag_id"`
 }
 type tagUser struct {
-	Name string    `json:"name"`
-	Id   uuid.UUID `json:"id"`
+	Name    string    `json:"name"`
+	Id      uuid.UUID `json:"id"`
+	Balance int       `json:"balance"`
 }
 
 func Check(c *fiber.Ctx) error {
@@ -33,8 +34,15 @@ func Check(c *fiber.Ctx) error {
 	database.DB.Model(&models.User{}).Where("id = ?", tag.UserID).First(&user)
 
 	result := tagUser{
-		Name: user.FirstName + " " + user.LastName,
-		Id:   user.ID,
+		Name:    user.FirstName + " " + user.LastName,
+		Id:      user.ID,
+		Balance: user.Balance,
+	}
+
+	if user.Balance > 1000000 {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"message": errors.DEPT,
+		})
 	}
 
 	return c.Status(fiber.StatusOK).JSON(fiber.Map{
