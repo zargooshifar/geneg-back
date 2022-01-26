@@ -1,7 +1,6 @@
 package foods
 
 import (
-	"fmt"
 	"github.com/gofiber/fiber/v2"
 	"github.com/google/uuid"
 	"msgv2-back/database"
@@ -31,11 +30,7 @@ func GetReserves(c *fiber.Ctx) error {
 	user := c.Locals("user").(*models.User)
 	foods := []models.Food{}
 
-	now := time.Now()
-	fmt.Println(now)
-	reserve_limit := time.Date(now.Year(), now.Month(), now.Day()-1, 12, 0, 0, 0, now.Location())
-	fmt.Println(reserve_limit)
-	database.DB.Model(&models.Food{}).Where("expire >= ? AND type <> ?", reserve_limit, models.BUFFET).Find(&foods)
+	database.DB.Model(&models.Food{}).Where("expire >= ? AND type <> ?", time.Now(), models.BUFFET).Find(&foods)
 
 	result := []reserveFood{}
 
