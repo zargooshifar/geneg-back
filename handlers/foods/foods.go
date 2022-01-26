@@ -54,9 +54,17 @@ func GetReserves(c *fiber.Ctx) error {
 }
 
 func GetBuffetItems(c *fiber.Ctx) error {
+	results := []models.Food{}
+	database.DB.Model(&models.Food{}).Where("expire >= ? AND type = ?", time.Now(), models.BUFFET).Find(&results)
+
 	foods := []models.Food{}
-	database.DB.Model(&models.Food{}).Where("expire >= ? AND type = ?", time.Now(), models.BUFFET).Find(&foods)
-	return c.Status(fiber.StatusOK).JSON(foods)
+	start := time.Now().Format("2006-01-02 00:00:00")
+	end := time.Now().Add(time.Hour * 24).Format("2006-01-02 00:00:00")
+	database.DB.Model(&models.Food{}).Where("expire >= ? AND expire < ? AND type = ?", start, end, models.LAUNCH).Find(&foods)
+
+	results = append(results, foods...)
+
+	return c.Status(fiber.StatusOK).JSON(results)
 }
 
 type reserve_result struct {
