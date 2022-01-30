@@ -8,7 +8,7 @@ import (
 )
 
 func Routes(app *fiber.App) {
-	app.Put("api/reserves/reserve", utils.Secure(models.ROLES{models.ADMIN, models.OPERATOR, models.USER}), foods.ReserveFood)
-	app.Get("api/reserves/reserves", utils.Secure(models.ROLES{models.ADMIN, models.OPERATOR, models.USER}), foods.GetReserves)
+	app.Put("api/reserves/reserve", utils.Secure(models.ROLES{models.ADMIN, models.OPERATOR, models.USER, models.GUEST}), foods.ReserveFood)
+	app.Get("api/reserves/reserves", utils.Secure(models.ROLES{models.ADMIN, models.OPERATOR, models.USER, models.GUEST}), foods.GetReserves)
 	app.Get("api/reserves/today", utils.Secure(models.ROLES{models.ADMIN, models.OPERATOR}), foods.GetTodayReserves)
 }

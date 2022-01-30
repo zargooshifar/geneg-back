@@ -8,5 +8,5 @@ import (
 )
 
 func Routes(app *fiber.App) {
-	app.Get("api/payments/payments", utils.Secure(models.ROLES{models.ADMIN, models.OPERATOR, models.USER}), payments.GetPayments)
+	app.Get("api/payments/payments", utils.Secure(models.ROLES{models.ADMIN, models.OPERATOR, models.USER, models.GUEST}), payments.GetPayments)
 }

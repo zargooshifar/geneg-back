@@ -8,6 +8,7 @@ const (
 	ADMIN    = "admin"
 	USER     = "user"
 	OPERATOR = "operator"
+	GUEST    = "guest"
 )
 
 type ROLES []string

@@ -14,7 +14,7 @@ func Routes(app *fiber.App) {
 	app.Put("api/admin/user", utils.Secure(models.ROLES{models.ADMIN}), handlers.CreateItem(models.User{}))
 	app.Post("api/admin/user", utils.Secure(models.ROLES{models.ADMIN}), handlers.UpdateItem(models.User{}))
 	app.Delete("api/admin/user", utils.Secure(models.ROLES{models.ADMIN}), handlers.DeleteItem(models.User{}))
-	app.Post("api/user/update", utils.Secure(models.ROLES{models.USER, models.ADMIN}), user.UpdateUser)
-	app.Get("api/user/get_profile", utils.Secure(models.ROLES{models.USER, models.ADMIN}), user.GetProfile)
+	app.Post("api/user/update", utils.Secure(models.ROLES{models.USER, models.ADMIN, models.GUEST, models.OPERATOR}), user.UpdateUser)
+	app.Get("api/user/get_profile", utils.Secure(models.ROLES{models.USER, models.ADMIN, models.GUEST, models.OPERATOR}), user.GetProfile)
 
 }
