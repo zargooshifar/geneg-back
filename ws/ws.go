@@ -67,7 +67,7 @@ func Config(app *fiber.App) {
 			}
 
 			tag := models.Tag{}
-			count := database.DB.Where("id = ?", msg).First(&tag).RowsAffected
+			count := database.DB.Where("tag_id = ?", msg).First(&tag).RowsAffected
 
 			if count == 0 {
 				if err = c.WriteMessage(mt, []byte("#ffffff")); err != nil {
