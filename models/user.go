@@ -32,12 +32,14 @@ type (
 		Role      string    `json:"role"`
 		Payments  []Payment `json:"payments" access:"admin,operator"`
 		Balance   int       `json:"balance" access:"admin,operator"`
+		Color     string    `json:"color" gorm:"default:#00ff00"`
 	}
 
 	UserUpdate struct {
 		FirstName    string `json:"first_name"`
 		LastName     string `json:"last_name"`
 		Notification bool   `json:"notification"`
+		Color        string `json:"color"`
 	}
 
 	Login struct {

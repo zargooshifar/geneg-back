@@ -16,7 +16,7 @@ func UpdateUser(c *fiber.Ctx) error {
 	base := new(models.Base)
 	c.BodyParser(base)
 
-	if err := database.DB.Table("users").Where("id = ?", user.ID).Updates(map[string]interface{}{"first_name": user_params.FirstName, "last_name": user_params.LastName}).Error; err != nil {
+	if err := database.DB.Table("users").Where("id = ?", user.ID).Updates(map[string]interface{}{"first_name": user_params.FirstName, "last_name": user_params.LastName, "color": user_params.Color}).Error; err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 			"message": errors.DB_ERROR_SAVING,
 			"err":     err,
