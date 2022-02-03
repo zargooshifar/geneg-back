@@ -9,6 +9,7 @@ import (
 
 func Routes(app *fiber.App) {
 	app.Post("api/tags/check", tags.Check)
+	app.Get("api/tags/check32", tags.Check32)
 
 	app.Get("api/tags/tags", utils.Secure(models.ROLES{models.ADMIN, models.OPERATOR, models.USER, models.GUEST}), tags.TagList)
 	app.Post("api/tags/tag", utils.Secure(models.ROLES{models.ADMIN, models.OPERATOR, models.USER, models.GUEST}), tags.TagEdit)

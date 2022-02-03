@@ -51,6 +51,19 @@ func Check(c *fiber.Ctx) error {
 	})
 }
 
+func Check32(c *fiber.Ctx) error {
+	id := c.Params("id")
+	tag := models.Tag{}
+	count := database.DB.Model(&models.Tag{}).Where("tag_id = ?", id).First(&tag).RowsAffected
+	if count == 0 {
+		return c.Status(fiber.StatusOK).Send([]byte("#ffffff"))
+	}
+	user := models.User{}
+	database.DB.Model(&models.User{}).Where("id = ?", tag.UserID).First(&user)
+	return c.Status(fiber.StatusOK).Send([]byte(user.Color))
+
+}
+
 func TagList(c *fiber.Ctx) error {
 	user := c.Locals("user").(*models.User)
 	items := []models.Tag{}
