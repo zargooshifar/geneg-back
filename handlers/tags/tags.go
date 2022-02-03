@@ -52,7 +52,7 @@ func Check(c *fiber.Ctx) error {
 }
 
 func Check32(c *fiber.Ctx) error {
-	id := c.Params("id")
+	id := c.Query("id")
 	tag := models.Tag{}
 	count := database.DB.Model(&models.Tag{}).Where("tag_id = ?", id).First(&tag).RowsAffected
 	if count == 0 {
