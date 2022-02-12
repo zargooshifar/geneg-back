@@ -17,8 +17,8 @@ func SendPin(number string) (string, error) {
 	pin := 10000 + rand.Intn(89999)
 
 	//delete previous verifications
-	database.DB.Where(&models.VerificationSMS{Number: number}).Delete(&models.VerificationSMS{})
-
+	deleted_ver := database.DB.Where("number = ?", number).Delete(&models.VerificationSMS{}).RowsAffected
+	log.Println("deleted ", deleted_ver, "prev verifications")
 	verification := new(models.VerificationSMS)
 
 	verification.Pin = pin

@@ -71,7 +71,7 @@ type reserve_result struct {
 func GetTodayReserves(c *fiber.Ctx) error {
 	foods := []models.Food{}
 	start := time.Now().Format("2006-01-02 00:00:00")
-	end := time.Now().Add(time.Hour * 24).Format("2006-01-02 00:00:00")
+	end := time.Now().Add(time.Hour * 48).Format("2006-01-02 00:00:00")
 	database.DB.Model(&models.Food{}).Where("expire >= ? AND expire < ? AND type = ?", start, end, models.LAUNCH).Find(&foods)
 
 	result := []reserve_result{}

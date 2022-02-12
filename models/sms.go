@@ -17,7 +17,7 @@ type (
 		Expire   int64
 		Confirm  bool
 		Attempts int
-		Number   string
+		Number   string `json:"number"`
 	}
 
 	Pin struct {
