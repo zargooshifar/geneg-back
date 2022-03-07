@@ -79,8 +79,8 @@ func Config(app *fiber.App) {
 				user := models.User{}
 				database.DB.Where("id = ?", tag.UserID).First(&user)
 				checkin := models.CheckIn{}
-				checkin.User = user
-				checkin.UserID = &user.ID
+				//checkin.User = user
+				checkin.UserID = user.ID
 				checkin.Tagged = true
 				err = database.DB.Create(&checkin).Error
 

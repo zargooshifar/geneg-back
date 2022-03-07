@@ -46,8 +46,8 @@ func CheckInCreate(c *fiber.Ctx) error {
 
 	item := models.CheckIn{}
 	item.Tagged = false
-	item.User = user
-	item.UserID = &user.ID
+	//item.User = user
+	item.UserID = user.ID
 
 	if err := database.DB.Model(&models.CheckIn{}).Create(&item).Error; err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
