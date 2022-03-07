@@ -32,6 +32,7 @@ func ConnectDB() {
 	DB.AutoMigrate(&models.Claims{})
 	DB.AutoMigrate(&models.Tag{})
 	DB.AutoMigrate(&models.VerificationSMS{})
+	DB.AutoMigrate(&models.CheckIn{})
 
 	fmt.Println("Database Migrated!")
 }

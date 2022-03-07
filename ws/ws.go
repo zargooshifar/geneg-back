@@ -78,7 +78,15 @@ func Config(app *fiber.App) {
 			} else {
 				user := models.User{}
 				database.DB.Where("id = ?", tag.UserID).First(&user)
-				if err = c.WriteMessage(mt, []byte(user.Color)); err != nil {
+				checkin := models.CheckIn{}
+				checkin.User = user
+				checkin.UserID = user.ID
+				checkin.Tagged = true
+				err = database.DB.Create(&checkin).Error
+
+				if err == nil {
+					c.WriteMessage(mt, []byte(user.Color))
+				} else {
 					log.Println("write:", err)
 					break
 				}
