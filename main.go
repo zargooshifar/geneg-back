@@ -8,6 +8,7 @@ import (
 	"msgv2-back/database"
 	"msgv2-back/handlers"
 	"msgv2-back/routes/auth"
+	"msgv2-back/routes/checkin"
 	"msgv2-back/routes/face_detection"
 	"msgv2-back/routes/foods"
 	"msgv2-back/routes/images"
@@ -58,7 +59,7 @@ func main() {
 	reserve.Routes(app)
 	face_detection.Routes(app)
 	tags.Routes(app)
-
+	checkin.Routes(app)
 	ws.Config(app)
 
 	app.Use(handlers.NotFound)
