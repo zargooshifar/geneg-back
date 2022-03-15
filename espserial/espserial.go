@@ -2,6 +2,7 @@ package espserial
 
 import (
 	"bufio"
+	"flag"
 	"github.com/goburrow/serial"
 	"io/ioutil"
 	"log"
@@ -9,6 +10,17 @@ import (
 	"msgv2-back/models"
 	"strconv"
 	"strings"
+	"time"
+)
+
+var (
+	address  string
+	baudrate int
+	databits int
+	stopbits int
+	parity   string
+
+	message string
 )
 
 func FindESP() string {
@@ -40,12 +52,49 @@ func GetUserString(user *models.User, is_buffet bool, is_checkin bool) string {
 	return buffet + ":" + checkin + ":" + user.ID.String() + ":" + user.FirstName + " " + user.LastName + ":" + strconv.Itoa(user.Balance) + ":" + user.Color + "\r\n"
 }
 
-func Config(serial_port serial.Port) {
+func Config() {
 
+	flag.StringVar(&address, "a", "COM6", "address")
+	flag.IntVar(&baudrate, "b", 115200, "baud rate")
+	flag.IntVar(&databits, "d", 8, "data bits")
+	flag.IntVar(&stopbits, "s", 1, "stop bits")
+	flag.StringVar(&parity, "p", "N", "parity (N/E/O)")
+	flag.StringVar(&message, "m", "serial", "message")
+	flag.Parse()
+
+	config := serial.Config{
+		Address:  address,
+		BaudRate: baudrate,
+		DataBits: databits,
+		StopBits: stopbits,
+		Parity:   parity,
+		Timeout:  30 * time.Second,
+	}
+	log.Printf("connecting %+v", config)
+
+	//com_port := espserial.FindESP()
+	//log.Println("serialport: ")
+	//log.Println(com_port)
+	//serial_config := &serial.Config{Address: "COM22", BaudRate: 115200, Timeout: time.Second * 1}
+
+	serial_port, err := serial.Open(&config)
+
+	if err != nil {
+		log.Println("serial failed to connect!")
+
+		log.Fatal(err)
+	}
+	//defer serial_port.Close()
+
+	serial_port.Open(&config)
 	scanner := bufio.NewScanner(serial_port)
-	for scanner.Scan() {
-		data := scanner.Text()
 
+	//buf := make([]byte, 32)
+	for scanner.Scan() {
+		//log.Println("reading...")
+		//serial_port.Read(buf)
+		//data := string(buf)
+		data := scanner.Text()
 		log.Println("serial: ", data)
 
 		parts := strings.Split(data, ":")
@@ -60,6 +109,8 @@ func Config(serial_port serial.Port) {
 			}
 		}
 
+		//serial_port.Close()
+		//serial_port.Open(&config)
 	}
 }
 

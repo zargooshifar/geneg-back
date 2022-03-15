@@ -4,19 +4,11 @@ import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/websocket/v2"
 	"log"
+	"msgv2-back/database"
+	"msgv2-back/models"
 )
 
 func Config(app *fiber.App) {
-
-	//for {
-	//	n, err = serial_port.Read(buf)
-	//	if err != nil {
-	//		log.Fatal(err)
-	//	}
-	//
-	//	log.Printf( "serial:  %q", buf[:n])
-	//}
-	//
 
 	clients := []*websocket.Conn{}
 
@@ -64,14 +56,42 @@ func Config(app *fiber.App) {
 	}))
 
 	app.Get("/ws/check", websocket.New(func(c *websocket.Conn) {
-		//var (
-		//	mt  int
-		//	msg []byte
-		//	err error
-		//)
+		var (
+			mt  int
+			msg []byte
+			err error
+		)
 		for {
+			if mt, msg, err = c.ReadMessage(); err != nil {
+				log.Println("read:", err)
+				break
+			}
 
-			//
+			tag := models.Tag{}
+			count := database.DB.Where("tag_id = ?", msg).First(&tag).RowsAffected
+
+			if count == 0 {
+				if err = c.WriteMessage(mt, []byte("#ffffff")); err != nil {
+					log.Println("write:", err)
+					break
+				}
+
+			} else {
+				user := models.User{}
+				database.DB.Where("id = ?", tag.UserID).First(&user)
+				checkin := models.CheckIn{}
+				//checkin.User = user
+				checkin.UserID = user.ID
+				checkin.Tagged = true
+				err = database.DB.Create(&checkin).Error
+
+				if err == nil {
+					c.WriteMessage(mt, []byte(user.Color))
+				} else {
+					log.Println("write:", err)
+					break
+				}
+			}
 
 		}
 
