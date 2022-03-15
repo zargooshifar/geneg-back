@@ -3,12 +3,23 @@ package ws
 import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/websocket/v2"
+	"github.com/tarm/serial"
+	"io/ioutil"
 	"log"
-	"msgv2-back/database"
-	"msgv2-back/models"
+	"strings"
 )
 
-func Config(app *fiber.App) {
+func Config(app *fiber.App, serial_port *serial.Port) {
+
+	//for {
+	//	n, err = serial_port.Read(buf)
+	//	if err != nil {
+	//		log.Fatal(err)
+	//	}
+	//
+	//	log.Printf( "serial:  %q", buf[:n])
+	//}
+	//
 
 	clients := []*websocket.Conn{}
 
@@ -30,6 +41,7 @@ func Config(app *fiber.App) {
 			err error
 		)
 		for {
+
 			if mt, msg, err = c.ReadMessage(); err != nil {
 				log.Println("read:", err)
 
@@ -41,8 +53,8 @@ func Config(app *fiber.App) {
 
 				break
 			}
+			log.Printf("websocket: %s", msg)
 
-			log.Printf("recv: %s", msg)
 			for _, client := range clients {
 				if err = client.WriteMessage(mt, msg); err != nil {
 					log.Println("write:", err)
@@ -55,42 +67,14 @@ func Config(app *fiber.App) {
 	}))
 
 	app.Get("/ws/check", websocket.New(func(c *websocket.Conn) {
-		var (
-			mt  int
-			msg []byte
-			err error
-		)
+		//var (
+		//	mt  int
+		//	msg []byte
+		//	err error
+		//)
 		for {
-			if mt, msg, err = c.ReadMessage(); err != nil {
-				log.Println("read:", err)
-				break
-			}
 
-			tag := models.Tag{}
-			count := database.DB.Where("tag_id = ?", msg).First(&tag).RowsAffected
-
-			if count == 0 {
-				if err = c.WriteMessage(mt, []byte("#ffffff")); err != nil {
-					log.Println("write:", err)
-					break
-				}
-
-			} else {
-				user := models.User{}
-				database.DB.Where("id = ?", tag.UserID).First(&user)
-				checkin := models.CheckIn{}
-				//checkin.User = user
-				checkin.UserID = user.ID
-				checkin.Tagged = true
-				err = database.DB.Create(&checkin).Error
-
-				if err == nil {
-					c.WriteMessage(mt, []byte(user.Color))
-				} else {
-					log.Println("write:", err)
-					break
-				}
-			}
+			//
 
 		}
 
