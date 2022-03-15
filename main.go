@@ -3,8 +3,8 @@ package main
 import (
 	"encoding/binary"
 	"flag"
+	"github.com/goburrow/serial"
 	"github.com/gofiber/fiber/v2/middleware/cors"
-	"github.com/tarm/serial"
 	"log"
 	"msgv2-back/database"
 	"msgv2-back/espserial"
@@ -39,14 +39,17 @@ func main() {
 	com_port := espserial.FindESP()
 	log.Println("serialport: ")
 	log.Println(com_port)
-	com := &serial.Config{Name: com_port, Baud: 115200, ReadTimeout: time.Second * 1}
+	serial_config := &serial.Config{Address: "COM22", BaudRate: 115200, Timeout: time.Second * 1}
 
-	serial_port, err := serial.OpenPort(com)
+	serial_port, err := serial.Open(serial_config)
+
 	if err != nil {
 		log.Println("serial failed to connect!")
 
 		log.Fatal(err)
 	}
+	defer serial_port.Close()
+	go espserial.Config(serial_port)
 
 	flag.Parse()
 
@@ -66,7 +69,6 @@ func main() {
 
 	app.Static("/images", "./images/")
 
-	go espserial.Config(serial_port)
 	auth.Routes(app)
 	users.Routes(app)
 	foods.Routes(app)
@@ -76,7 +78,7 @@ func main() {
 	face_detection.Routes(app)
 	tags.Routes(app)
 	checkin.Routes(app)
-	ws.Config(app, serial_port)
+	ws.Config(app)
 
 	app.Use(handlers.NotFound)
 

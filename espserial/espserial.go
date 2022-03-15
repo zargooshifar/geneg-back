@@ -2,7 +2,7 @@ package espserial
 
 import (
 	"bufio"
-	"github.com/tarm/serial"
+	"github.com/goburrow/serial"
 	"io/ioutil"
 	"log"
 	"msgv2-back/database"
@@ -40,7 +40,7 @@ func GetUserString(user *models.User, is_buffet bool, is_checkin bool) string {
 	return buffet + ":" + checkin + ":" + user.ID.String() + ":" + user.FirstName + " " + user.LastName + ":" + strconv.Itoa(user.Balance) + ":" + user.Color + "\r\n"
 }
 
-func Config(serial_port *serial.Port) {
+func Config(serial_port serial.Port) {
 
 	scanner := bufio.NewScanner(serial_port)
 	for scanner.Scan() {
@@ -63,12 +63,13 @@ func Config(serial_port *serial.Port) {
 	}
 }
 
-func DoCheckin(tag_id string, serial_port *serial.Port) {
+func DoCheckin(tag_id string, serial_port serial.Port) {
 
 	tag := models.Tag{}
 	count := database.DB.Where("tag_id = ?", tag_id).First(&tag).RowsAffected
 
 	if count == 0 {
+
 		if _, err := serial_port.Write([]byte("0:1:0:-:0:#ffffff\r\n")); err != nil {
 			log.Println("write:", err)
 			return

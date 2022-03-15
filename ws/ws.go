@@ -3,11 +3,10 @@ package ws
 import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/websocket/v2"
-	"github.com/tarm/serial"
 	"log"
 )
 
-func Config(app *fiber.App, serial_port *serial.Port) {
+func Config(app *fiber.App) {
 
 	//for {
 	//	n, err = serial_port.Read(buf)
