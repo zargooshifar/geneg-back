@@ -4,9 +4,7 @@ import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/websocket/v2"
 	"github.com/tarm/serial"
-	"io/ioutil"
 	"log"
-	"strings"
 )
 
 func Config(app *fiber.App, serial_port *serial.Port) {
