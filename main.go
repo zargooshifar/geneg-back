@@ -34,14 +34,45 @@ var (
 	prod = flag.Bool("prod", false, "Enable prefork in Production")
 )
 
+
+var (
+	address  string
+	baudrate int
+	databits int
+	stopbits int
+	parity   string
+
+	message string
+)
+
 func main() {
 
-	com_port := espserial.FindESP()
-	log.Println("serialport: ")
-	log.Println(com_port)
-	serial_config := &serial.Config{Address: "COM22", BaudRate: 115200, Timeout: time.Second * 1}
 
-	serial_port, err := serial.Open(serial_config)
+flag.StringVar(&address, "a", espserial.FindESP() , "address")
+	flag.IntVar(&baudrate, "b", 115200, "baud rate")
+	flag.IntVar(&databits, "d", 8, "data bits")
+	flag.IntVar(&stopbits, "s", 1, "stop bits")
+	flag.StringVar(&parity, "p", "N", "parity (N/E/O)")
+	flag.StringVar(&message, "m", "serial", "message")
+	flag.Parse()
+
+	config := serial.Config{
+		Address:  address,
+		BaudRate: baudrate,
+		DataBits: databits,
+		StopBits: stopbits,
+		Parity:   parity,
+		Timeout:  30 * time.Second,
+	}
+	log.Printf("connecting %+v", config)
+
+
+	//com_port := espserial.FindESP()
+	//log.Println("serialport: ")
+	//log.Println(com_port)
+	//serial_config := &serial.Config{Address: "COM22", BaudRate: 115200, Timeout: time.Second * 1}
+
+	serial_port, err := serial.Open(&config)
 
 	if err != nil {
 		log.Println("serial failed to connect!")
