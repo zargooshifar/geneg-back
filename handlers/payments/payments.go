@@ -3,6 +3,7 @@ package payments
 import (
 	"github.com/gofiber/fiber/v2"
 	"msgv2-back/database"
+	"msgv2-back/errors"
 	"msgv2-back/handlers"
 	"msgv2-back/models"
 	"strconv"
@@ -30,4 +31,20 @@ func GetPayments(c *fiber.Ctx) error {
 		"count":   count,
 		"results": payments,
 	})
+}
+
+func CreatePayments(c *fiber.Ctx) error {
+	user := c.Locals("user").(*models.User)
+
+	payment := models.Payment{}
+	c.BodyParser(&payment)
+
+	payment.Description = "پرداختی - اضافه شده توسط " + user.FirstName + " " + user.LastName
+
+	if err := database.DB.Model(&models.Payment{}).Create(&payment).Error; err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"message": errors.DB_ERROR_SAVING,
+		})
+	}
+	return c.Status(fiber.StatusOK).JSON(payment)
 }
