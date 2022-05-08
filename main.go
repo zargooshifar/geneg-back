@@ -10,6 +10,7 @@ import (
 	"log"
 	"msgv2-back/database"
 	"msgv2-back/handlers"
+	"msgv2-back/radius"
 	"msgv2-back/routes/auth"
 	"msgv2-back/routes/checkin"
 	"msgv2-back/routes/face_detection"
@@ -65,9 +66,12 @@ func main() {
 
 	app.Use(handlers.NotFound)
 
+	go radius.Setup()
+	log.Printf("Starting server on :3000")
+
 	log.Fatal(app.Listen(*port))
 
-	app.Listen(":3000")
+	//app.Listen(":3000")
 }
 
 func seedRand() {
