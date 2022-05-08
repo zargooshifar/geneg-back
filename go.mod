@@ -11,7 +11,7 @@ require (
 	github.com/google/uuid v1.3.0
 	github.com/joho/godotenv v1.4.0
 	github.com/mostafah/go-jalali v0.0.0-20130806120429-c65c7f7a5ceb
-	gocv.io/x/gocv v0.29.0
+	gocv.io/x/gocv v0.30.0
 	golang.org/x/crypto v0.0.0-20210921155107-089bfa567519
 	gorm.io/driver/postgres v1.1.2
 	gorm.io/gorm v1.21.15
