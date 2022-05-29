@@ -1,12 +1,14 @@
 package foods
 
 import (
-	"github.com/gofiber/fiber/v2"
-	"github.com/google/uuid"
+	"log"
 	"msgv2-back/database"
 	"msgv2-back/errors"
 	"msgv2-back/models"
 	"time"
+
+	"github.com/gofiber/fiber/v2"
+	"github.com/google/uuid"
 )
 
 const (
@@ -77,11 +79,17 @@ func GetTodayReserves(c *fiber.Ctx) error {
 	result := []reserve_result{}
 
 	for _, food := range foods {
+		log.Println("foods")
+		log.Println(food.ID.String())
+		log.Println(food.Name)
 
 		reserves := []models.Reserve{}
 		database.DB.Model(&models.Reserve{}).Where("food_id = ?", food.ID).Find(&reserves)
 
 		for _, r := range reserves {
+			log.Println("reserves")
+			log.Println(r.ID.String())
+
 			user := models.User{}
 			database.DB.Where("id = ?", r.UserID).Find(&user)
 			new_result := reserve_result{
